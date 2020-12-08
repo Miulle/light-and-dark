@@ -6,14 +6,15 @@ const image2 = document.getElementById('image2');
 const image3 = document.getElementById('image3');
 const textBox = document.getElementById('text-box');
 
-// Dark Mode Stylens
-function darkMode() {
-    nav.style.backgroundColor = 'rgb(0 0 0 / 50%)';
-    textBox.style.backgroundColor = 'rgb(255 255 255 / 50%)';
-    toggleIcon.children[0].textContent = 'Dark Mode';
-    toggleIcon.children[1].classList.remove('fa-sun');
-    toggleIcon.children[1].classList.add('fa-moon');
-    imageMode('dark');
+const DARK_THEME = 'dark';
+const LIGHT_THEME = 'light';
+
+function toggleDarkLightMode(color) {
+    nav.style.backgroundColor = (color === DARK_THEME) ? 'rgb(0 0 0 / 50%)' :'rgb(255 255 255 / 50%)';
+    textBox.style.backgroundColor = (color === DARK_THEME) ? 'rgb(255 255 255 / 50%)' : 'rgb(0 0 0 / 50%)';
+    toggleIcon.children[0].textContent = (color === DARK_THEME) ? 'Dark Mode' : 'Light Mode';
+    (color === DARK_THEME) ? toggleIcon.children[1].classList.replace('fa-sun', 'fa-moon') : toggleIcon.children[1].classList.replace('fa-moon', 'fa-sun');
+    (color === DARK_THEME) ? imageMode(DARK_THEME) : imageMode(LIGHT_THEME);
 }
 
 // Dark or Light Images
@@ -23,26 +24,23 @@ function imageMode(color) {
     image3.src = `img/undraw_conceptual_idea_${color}.svg`;
 }
 
-// Light Mode Stylens
-function lightMode() {
-    nav.style.backgroundColor = 'rgb(255 255 255 / 50%)';
-    textBox.style.backgroundColor = 'rgb(0 0 0 / 50%)';
-    toggleIcon.children[0].textContent = 'Light Mode';
-    toggleIcon.children[1].classList.remove('fa-moon');
-    toggleIcon.children[1].classList.add('fa-sun');
-    imageMode('light');
-}
-
 // Siwtch Theme Dynamically
 function switchTheme(event) {
-    if(event.target.checked) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        darkMode();
-    } else {
-        document.documentElement.setAttribute('data-theme', 'light');
-        lightMode();
-    }
+    event.target.checked ? document.documentElement.setAttribute('data-theme', DARK_THEME) : document.documentElement.setAttribute('data-theme', LIGHT_THEME);
+    event.target.checked ? localStorage.setItem('theme', DARK_THEME) : localStorage.setItem('theme', LIGHT_THEME);
+    event.target.checked ? toggleDarkLightMode(DARK_THEME) : toggleDarkLightMode(LIGHT_THEME);
 }
 
 // Event Listender
 toggleSwitch.addEventListener('change', switchTheme);
+
+// Check Local Storage For Theme
+const currentTheme = localStorage.getItem('theme');
+if (currentTheme) {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+
+    if (currentTheme === DARK_THEME) {
+        toggleSwitch.checked = true;
+        toggleDarkLightMode(DARK_THEME);
+    }
+}
